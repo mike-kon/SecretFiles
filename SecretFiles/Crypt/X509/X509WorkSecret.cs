@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SecretFiles.Crypt.X509
 {
-    public class X509WorkSecret : WorkSecret
+    public class X509WorkSecret : WorkSecret, IAsyncKey
     {
         private X509Certificate2 Certificate;
 
@@ -74,6 +74,33 @@ namespace SecretFiles.Crypt.X509
                 destStream.Write(data, 0, data.Length);
             }
             destStream.Flush();
+        }
+
+        public void ExportPublikey(string path)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("-----BEGIN CERTIFICATE-----");
+            builder.AppendLine(Convert.ToBase64String(Certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
+            builder.AppendLine("-----END CERTIFICATE-----");
+            File.WriteAllText(path, builder.ToString());
+        }
+
+        /// <summary>
+        /// У самоподписанного сертификата это не реализовано
+        /// </summary>
+        /// <param name="path"></param>
+        public void ExportRequestSign(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// У самоподписанного сертификата это не реализовано
+        /// </summary>
+        /// <param name="path"></param>
+        public void InportResponceSign(string path)
+        {
+            throw new NotImplementedException();
         }
     }
 }

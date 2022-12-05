@@ -55,11 +55,16 @@ namespace SecretFiles
         {
             try
             {
-                GenerateKeys();
                 WinReestr.Save(this);
+                if (WorkerWrapper.GenerateKeys(GetGenerator(), this))
+                {
+                    WriteLog("Сертификаты созданы");
+                    MessageBox.Show(this, "Сертификаты созданы", "complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }               
             }
             catch (Exception ex)
             {
+                MessageBox.Show(this, "При создании сертификатов возникли ошибки", "not complete", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 HandlerException(ex);
             }
         }
@@ -84,12 +89,13 @@ namespace SecretFiles
                         return;
                 }
                 WinReestr.Save(this);
-                Encrypt(sourcefilename, cryptfilename);
+                WorkerWrapper.Encrypt(GetSecret(),sourcefilename, cryptfilename);
                 EdFileName.Text = string.Empty;
                 MessageBox.Show(this, "Шифрование завершено", "complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
+                MessageBox.Show(this, "При шифрации возникли ошибки", "not complete", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 HandlerException(ex);
             }
             finally
@@ -116,11 +122,12 @@ namespace SecretFiles
                         return;
                 }
                 WinReestr.Save(this);
-                Decrypt(cryptfilename, destfilename);
-                MessageBox.Show(this, "Дешифрование завершено", "complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                WorkerWrapper.Decrypt(GetSecret(),cryptfilename, destfilename);
+                MessageBox.Show(this, "Дешифрация завершена", "complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
+                MessageBox.Show(this, "При дешифрации возникли ошибки", "not complete", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 HandlerException(ex);
             }
             finally
@@ -157,6 +164,27 @@ namespace SecretFiles
                 EdCertificate.Text = dlg.FileName;
         }
 
+        private void BtnExportPublicKey_Click(object sender, EventArgs e)
+        {
+            string exportpath = $@"{Path.GetDirectoryName(EdCertificate.Text)}\{Path.GetFileNameWithoutExtension(EdCertificate.Text)}.pub";
+            if (File.Exists(exportpath))
+            {
+                if (MessageBox.Show(this, $"Файл {exportpath} существует. Переписать?", "OS.IO", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    return;
+            }
+            var WorkSecret = GetSecret();
+            if (WorkSecret is IAsyncKey)
+            {
+                WorkerWrapper.ExportPublicKey(((IAsyncKey)WorkSecret), exportpath);
+                MessageBox.Show(this, "Сертификат выгружен", "complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(this, "Выгрузка сертификата невозможна", "not complete", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             WinReestr.Save(this);
@@ -165,55 +193,36 @@ namespace SecretFiles
         #endregion
 
         #region Switchers
-        private void GenerateKeys()
+        private IWorkSecretFile GetSecret()
         {
-            IGenerateKeys generator = null;
             switch (EdMethod.Text)
             {
                 case "X509Certificate2":
-                    generator = new X509Generate();
-                    break;
+                    return GetX509();
+                default:
+                    throw new ApplicationException($"Для типа {EdMethod.Text} нет обработчика");
+            }
+
+        }
+
+        private IGenerateKeys GetGenerator()
+        {
+            switch (EdMethod.Text)
+            {
+                case "X509Certificate2":
+                    return new X509SelfSignGenerate();
                 default:
                     throw new ApplicationException($"Неизвестный тип {EdMethod.Text}");
             }
-            if (generator.GenerateForm.ShowDialog(this) == DialogResult.OK)
-            {
-                generator.GenerateKeys();
-                WriteLog("Сертификаты созданы");
-                MessageBox.Show(this, "Сертификаты созданы", "complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void Encrypt(string source, string crypt)
-        {
-            IWorkSecretFile workSecret = null;
-            switch (EdMethod.Text)
-            {
-                case "X509Certificate2":
-                    workSecret = GetX509();
-                    break;
-            }
-            workSecret.Crypt(source, crypt);
-        }
-
-        private void Decrypt(string crypt, string dest)
-        {
-            IWorkSecretFile workSecret = null;
-            switch (EdMethod.Text)
-            {
-                case "X509Certificate2":
-                    workSecret = GetX509();
-                    break;
-            }
-            workSecret.Decrypt(crypt, dest);
         }
         #endregion
 
-        #region Worker
+        #region Getter
         private IWorkSecretFile GetX509()
         {
             return new X509WorkSecret(EdCertificate.Text, EdPassword.Text);
         }
+ 
         #endregion
 
         private void HandlerException(Exception ex)

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace SecretFiles.Crypt.X509
 {
-    public class X509Generate : IGenerateKeys
+    public class X509SelfSignGenerate : IGenerateKeys
     {
         private X509Form _From;
         public Form GenerateForm => _From;
@@ -23,7 +23,7 @@ namespace SecretFiles.Crypt.X509
         public string Password => _From.Password;
         public X509ContentType CertType => _From.CertType;
 
-        public X509Generate()
+        public X509SelfSignGenerate()
         {
             _From = new X509Form();
         }

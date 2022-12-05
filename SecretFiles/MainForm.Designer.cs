@@ -45,6 +45,7 @@
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.BtnCert = new System.Windows.Forms.Button();
             this.EdCertificate = new System.Windows.Forms.TextBox();
+            this.BtnExportPublicKey = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -68,7 +69,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.BtnOpenFile);
             this.groupBox1.Controls.Add(this.EdFileName);
-            this.groupBox1.Location = new System.Drawing.Point(15, 136);
+            this.groupBox1.Location = new System.Drawing.Point(13, 136);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(484, 54);
             this.groupBox1.TabIndex = 1;
@@ -116,7 +117,7 @@
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.BtnCryptPub);
-            this.groupBox2.Location = new System.Drawing.Point(13, 196);
+            this.groupBox2.Location = new System.Drawing.Point(11, 196);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(488, 68);
             this.groupBox2.TabIndex = 2;
@@ -140,7 +141,7 @@
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.BtnDecryptSecret);
-            this.groupBox3.Location = new System.Drawing.Point(14, 270);
+            this.groupBox3.Location = new System.Drawing.Point(12, 270);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(485, 58);
             this.groupBox3.TabIndex = 3;
@@ -203,6 +204,7 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.BtnExportPublicKey);
             this.groupBox5.Controls.Add(this.EdPassword);
             this.groupBox5.Controls.Add(this.BtnCert);
             this.groupBox5.Controls.Add(this.label1);
@@ -212,7 +214,7 @@
             this.groupBox5.Size = new System.Drawing.Size(484, 80);
             this.groupBox5.TabIndex = 7;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Сертификат";
+            this.groupBox5.Text = "Файл с ключем";
             // 
             // BtnCert
             // 
@@ -233,6 +235,16 @@
             this.EdCertificate.Name = "EdCertificate";
             this.EdCertificate.Size = new System.Drawing.Size(435, 20);
             this.EdCertificate.TabIndex = 0;
+            // 
+            // BtnExportPublicKey
+            // 
+            this.BtnExportPublicKey.Location = new System.Drawing.Point(242, 47);
+            this.BtnExportPublicKey.Name = "BtnExportPublicKey";
+            this.BtnExportPublicKey.Size = new System.Drawing.Size(146, 23);
+            this.BtnExportPublicKey.TabIndex = 4;
+            this.BtnExportPublicKey.Text = "Выгрузка Сертификата";
+            this.BtnExportPublicKey.UseVisualStyleBackColor = true;
+            this.BtnExportPublicKey.Click += new System.EventHandler(this.BtnExportPublicKey_Click);
             // 
             // MainForm
             // 
@@ -285,6 +297,7 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button BtnCert;
         private System.Windows.Forms.TextBox EdCertificate;
+        private System.Windows.Forms.Button BtnExportPublicKey;
     }
 }
 
